@@ -1,6 +1,5 @@
-# Graph
-C++ Graph Implementation (Adjacency list, DFS)
-Compilation Instructions
+# C++ Graph Implementation (Adjacency list, DFS)
+# Compilation Instructions
 The program will compile on the C++17 standard, and it will possibly compile on older standards. To run the included main.cpp file, please enter three single character command line arguments. The maze_graph class needs these three command line arguments because they represent the starting character, ending character, and path character. These parameters are required to solve an actual ASCII-based maze using this graph. To run a short demo, enter ‘y’ when asked if the program should be run in debug mode.
 If you want to test the classes and DFS with your own maze, please do, but keep in mind that you must update the command line arguments to reflect the characters used in your maze. The format is: <path character> <ending character> <starting character>. Also, the maze must be in a .txt file named “maze.txt” and located local to the program. The maze search has worked with every maze I have tried, regardless of size.
 To run the included maze (which will automatically happen if you use the included main.cpp), please enter the following command line arguments: @ x *.

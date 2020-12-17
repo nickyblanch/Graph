@@ -8,12 +8,16 @@
 #include <fstream>
 
 
+
 // Forward declaration of Edge class
 template <class T>
 class Edge;
 
 
 
+  /////////////////////////////////////////////////////////////////////
+ //                      GENERAL GRAPH CLASS                        //
+/////////////////////////////////////////////////////////////////////
 
 
 
@@ -31,10 +35,9 @@ class Graph {
 	 print_graph() function will not work correctly. The user would
 	 need to create their own print function within the derived class.*/
 public:
-	// Default constructor
+	// Default constructor and parameterized constructor
 	Graph() { this->N = 0; };
 
-	// Parameterized constructor
 	Graph(std::vector<Edge<T>> in_vec, unsigned int size) {
 		this->adj_list.resize(size);
 		this->N = size;
@@ -43,22 +46,24 @@ public:
 		}
 	};
 
-	// Add an edge to the graph
+
+	// Add an edge to the graph (with two additional overloads)
 	void add_edge(Edge<T> new_edge);
 
-	// Overloaded funcion to add an edge to the graph
 	void add_edge(unsigned int source, unsigned int destination, T metadata);
 
-	// Overloaded funcion to add an edge to the graph
 	void add_edge(unsigned int source, unsigned int destination);
+
 
 	// Scan an input file to load the graph (virtual function)
 	virtual void load_graph() = 0;
 
+
 	// Run the implemented graph search algorithm (virtual function)
 	virtual std::list<unsigned int> run_algorithm(unsigned int start_node, unsigned int end_node) = 0;
 
-	//DEBUG:
+
+	// Print the graph:
 	void print_graph() {
 		for (unsigned int i = 0; i < this->adj_list.size(); i++) {
 			for (unsigned int j = 0; j < this->adj_list[i].size(); j++) {
@@ -67,15 +72,18 @@ public:
 		}
 	}
 
+
 protected:
 	// This 'adjacency list' is actually a vector of vectors, instead of
 	// the traditional array of lists. However, the funtionality is still
-	// the same, with the added benefit of it being easily resizeable.
+	// the same, with the added benefit of it being simple and easily resizeable.
 	std::vector<std::vector<Edge<T>>> adj_list;
+
 
 	// Number of nodes
 	unsigned int N;
 };
+
 
 
 template <class T>
@@ -95,7 +103,8 @@ void Graph<T>::add_edge(Edge<T> new_edge) {
 	this->adj_list[new_edge.source].push_back(new_edge);
 };
 
-// Overloaded funcion to add an edge to the graph
+
+
 template <class T>
 void Graph<T>::add_edge(unsigned int source, unsigned int destination, T metadata) {
 	// If either node is not included in the adjacency list, resize
@@ -112,7 +121,8 @@ void Graph<T>::add_edge(unsigned int source, unsigned int destination, T metadat
 	this->adj_list[temp->source].push_back(*temp);
 };
 
-// Overloaded funcion to add an edge to the graph
+
+
 template <class T>
 void Graph<T>::add_edge(unsigned int source, unsigned int destination) {
 	// If either node is not included in the adjacency list, resize
@@ -130,6 +140,9 @@ void Graph<T>::add_edge(unsigned int source, unsigned int destination) {
 
 
 
+  /////////////////////////////////////////////////////////////////////
+ //                            EDGE CLASS                           //
+/////////////////////////////////////////////////////////////////////
 
 
 
@@ -146,6 +159,10 @@ public:
 
 
 
+  /////////////////////////////////////////////////////////////////////
+ //                    DERIVED MAZE_GRAPH CLASS                     //
+/////////////////////////////////////////////////////////////////////
+
 
 
 // Struct to hold metadata for the maze_graph class
@@ -153,6 +170,7 @@ struct T_MetaData {
 	int int_data;
 	std::string string_data;
 };
+
 
 
 // Derived class implementing the maze problem (with user-defined struct as metadata template parameter)
@@ -169,7 +187,7 @@ class maze_graph : public Graph<T_MetaData> {
 	// need to do is create a derived class and define
 	// any overrided functions. The code reuse posibilities are endless.
 public:
-	// Maze graph constructor
+	// Maze graph constructors
 	maze_graph(char in_search_char, char in_end_char, char in_start_char, std::vector<Edge<T_MetaData>> in_vec, unsigned int size) {
 		this->search_char = in_search_char;
 		this->end_char = in_end_char;
@@ -182,7 +200,6 @@ public:
 		}
 	}
 	
-	// Overloaded constructor
 	maze_graph(char in_search_char, char in_end_char, char in_start_char) {
 		this->search_char = in_search_char;
 		this->end_char = in_end_char;
@@ -190,7 +207,6 @@ public:
 		this->N = 0;
 	}
 
-	// Default constructor
 	maze_graph() {
 		this->N = 0; 
 		this->search_char = '\0';
@@ -198,7 +214,6 @@ public:
 		this->start_char = '\0';
 	}
 
-	// Print graph (OVERRIDE)
 	void print_graph() {
 		for (unsigned int i = 0; i < this->adj_list.size(); i++) {
 			for (unsigned int j = 0; j < this->adj_list[i].size(); j++) {
@@ -207,14 +222,18 @@ public:
 		}
 	}
 
+
 	// Load the graph from an input file (OVERRIDE)
 	void load_graph();
 	
+
 	// Search algorithm to find a path through the maze (OVERRIDE)
 	std::list<unsigned int> run_algorithm(unsigned int start_node, unsigned int end_node);
 
+
 	// Depth first search algorithm
 	std::list<unsigned int> DFS(std::stack<unsigned int> in_stack, std::list<unsigned int> path, unsigned int end_node);
+
 
 	// Print the new, solved maze
 	void print_maze(std::list<unsigned int>);
@@ -242,12 +261,9 @@ public:
 };
 
 
+
 // Maze graph algorithm function definitions
 std::list<unsigned int> maze_graph::DFS(std::stack<unsigned int> in_stack, std::list<unsigned int> path, unsigned int end_node) {
-	/*
-	Disclaimer: In my testing, I have found that this function does not respond well to graphs with loops in them (example: 3->4, 4->2, 2->3).
-	More often than not, running this DFS on this type of graph will result in a stack overflow.
-	*/
 
 	// Stores current node
 	unsigned int curr_node = 0;
@@ -297,6 +313,7 @@ std::list<unsigned int> maze_graph::DFS(std::stack<unsigned int> in_stack, std::
 };
 
 
+
 std::list<unsigned int> maze_graph::run_algorithm(unsigned int start_node, unsigned int end_node) {
 	// CREATE STACK
 	std::stack<unsigned int> start_stack;
@@ -308,6 +325,7 @@ std::list<unsigned int> maze_graph::run_algorithm(unsigned int start_node, unsig
 	// CALL DFS FUNCTION
 	return DFS(start_stack, path, end_node);
 };
+
 
 
 void maze_graph::load_graph() {
@@ -410,7 +428,7 @@ void maze_graph::print_maze(std::list<unsigned int> in_list) {
 
 
 
-// IMPLEMENTATION EXPLANATION
+// IMPLEMENTATION EXPLANATION (UPDATED VERSION IN INCLUDED README_Project_2.pdf)
 /*
 I chose to implement a graph using an adjacency list because it allows me to store
 lots of data, store data of any type I want, and leads to the highest reusability possible.
